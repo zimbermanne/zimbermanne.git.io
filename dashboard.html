@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShoutBoard Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+    font-family:'DM Sans',sans-serif;
+    background:#1b2e20;
+    color:white;
+}
+nav{
+    background:#2d4732;
+    padding:16px 30px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+button{
+    padding:10px 16px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:700;
+}
+.logout{
+    background:#e74c3c;
+    color:white;
+}
+.container{
+    max-width:900px;
+    margin:auto;
+    padding:30px 20px;
+}
+.card{
+    background:#223626;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+}
+textarea{
+    width:100%;
+    min-height:140px;
+    padding:14px;
+    border-radius:10px;
+    border:none;
+    margin-top:14px;
+}
+.post-btn{
+    margin-top:14px;
+    background:#f1c40f;
+}
+.post{
+    background:#2d4732;
+    padding:16px;
+    border-radius:10px;
+    margin-bottom:12px;
+}
+.small{
+    opacity:.7;
+    font-size:.85rem;
+    margin-top:8px;
+}
+</style>
+</head>
+<body>
+
+<nav>
+    <h2>ShoutBoard Dashboard</h2>
+
+    <button class="logout" onclick="logoutUser()">
+        Logout
+    </button>
+</nav>
+
+<div class="container">
+
+<div class="card">
+    <h3 id="welcome"></h3>
+
+    <textarea id="message" placeholder="Write your message here..."></textarea>
+
+    <button class="post-btn" onclick="postMessage()">
+        Post Message
+    </button>
+</div>
+
+<div class="card">
+    <h3>Live Board</h3>
+
+    <div id="posts"></div>
+</div>
+
+</div>
+
+<script>
+
+const currentUser = JSON.parse(
+    localStorage.getItem("shoutboard_user")
+);
+
+if(!currentUser){
+    window.location.href = "index.html";
+}
+
+document.getElementById("welcome").innerText =
+    "Welcome, " + currentUser.name;
+
+function logoutUser(){
+
+    localStorage.removeItem("shoutboard_user");
+
+    window.location.href = "index.html";
+}
+
+function postMessage(){
+
+    const message = document.getElementById("message").value;
+
+    if(!message){
+        alert("Please write a message.");
+        return;
+    }
+
+    const posts = JSON.parse(
+        localStorage.getItem("shoutboard_posts") || "[]"
+    );
+
+    posts.unshift({
+        user: currentUser.name,
+        message: message,
+        createdAt: new Date().toLocaleString(),
+        status: "pending"
+    });
+
+    localStorage.setItem(
+        "shoutboard_posts",
+        JSON.stringify(posts)
+    );
+
+    document.getElementById("message").value = "";
+
+    alert("Message submitted successfully.");
+
+    loadPosts();
+}
+
+function loadPosts(){
+
+    const postsEl = document.getElementById("posts");
+
+    postsEl.innerHTML = "";
+
+    const posts = JSON.parse(
+        localStorage.getItem("shoutboard_posts") || "[]"
+    );
+
+    posts.forEach(post => {
+
+        const div = document.createElement("div");
+
+        div.className = "post";
+
+        div.innerHTML = `
+            <div>${post.message}</div>
+            <div class="small">
+                ${post.user} • ${post.createdAt}
+            </div>
+        `;
+
+        postsEl.appendChild(div);
+    });
+}
+
+loadPosts();
+
+</script>
+
+</body>
+</html>

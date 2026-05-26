@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShoutBoard Dashboard</title>
-
+<title>UBAONI Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -28,158 +27,339 @@ button{
     cursor:pointer;
     font-weight:700;
 }
-.logout{
-    background:#e74c3c;
-    color:white;
-}
-.container{
-    max-width:900px;
-    margin:auto;
-    padding:30px 20px;
-}
-.card{
+.logout { background:#e74c3c; color:white; }
+
+.container { max-width:1100px; margin:auto; padding:30px 20px; }
+.card {
     background:#223626;
-    padding:20px;
+    padding:24px;
     border-radius:12px;
-    margin-bottom:20px;
+    margin-bottom:24px;
 }
-textarea{
+textarea, select, input {
     width:100%;
-    min-height:140px;
     padding:14px;
     border-radius:10px;
     border:none;
-    margin-top:14px;
+    margin-top:8px;
+    background:#1b2e20;
+    color:white;
 }
-.post-btn{
+.post-btn {
     margin-top:14px;
     background:#f1c40f;
+    color:black;
+    padding:14px 24px;
 }
-.post{
+.post {
     background:#2d4732;
-    padding:16px;
+    padding:18px;
     border-radius:10px;
-    margin-bottom:12px;
+    margin-bottom:16px;
+    position:relative;
 }
-.small{
-    opacity:.7;
-    font-size:.85rem;
-    margin-top:8px;
+.small { opacity:.75; font-size:.85rem; margin-top:8px; }
+.tier { font-size:0.8rem; padding:4px 10px; border-radius:20px; display:inline-block; margin-bottom:8px; }
+.basic { background:#3b82f6; }
+.featured { background:#f59e0b; color:black; }
+.category { font-size:0.75rem; padding:2px 8px; background:#344837; border-radius:12px; }
+
+.like-btn {
+    background:none;
+    border:none;
+    font-size:1.3rem;
+    cursor:pointer;
+    margin-right:8px;
 }
 </style>
 </head>
 <body>
 
 <nav>
-    <h2>ShoutBoard Dashboard</h2>
-
-    <button class="logout" onclick="logoutUser()">
-        Logout
-    </button>
+    <h2>UBAONI Dashboard</h2>
+    <div>
+        <button id="admin-btn" onclick="showAdminView()" style="background:#27ae60; margin-right:10px; display:none;">👮 Admin</button>
+        <button class="logout" onclick="logoutUser()">Logout</button>
+    </div>
 </nav>
 
 <div class="container">
 
 <div class="card">
     <h3 id="welcome"></h3>
-
-    <textarea id="message" placeholder="Write your message here..."></textarea>
-
-    <button class="post-btn" onclick="postMessage()">
-        Post Message
-    </button>
+    <p class="small">Manage your posts below, search the board, and like messages you enjoy.</p>
 </div>
 
 <div class="card">
-    <h3>Live Board</h3>
-
+    <h3>Live Board (<span id="post-count">0</span>)</h3>
+    <div style="margin:16px 0;">
+        <input type="text" id="search-input" placeholder="Search messages, users, or categories..." onkeyup="filterPosts()">
+    </div>
     <div id="posts"></div>
+</div>
+
+<div class="card">
+    <h3>Write Your Message</h3>
+    <select id="category-select">
+        <option value="">Select Category</option>
+        <option value="Announcement">Announcement</option>
+        <option value="Business">Business / Ad</option>
+        <option value="Greeting">Greeting</option>
+        <option value="Event">Event</option>
+        <option value="Other">Other</option>
+    </select>
+
+    <select id="expiration-select">
+        <option value="">Select Expiration</option>
+        <option value="24">1 day</option>
+        <option value="48">2 days</option>
+        <option value="120">5 days</option>
+        <option value="336">2 weeks</option>
+    </select>
+
+    <textarea id="message" placeholder="Write your announcement, ad, or greeting..."></textarea>
+    
+    <button class="post-btn" onclick="postMessage('basic')">Post Free</button>
+    <button class="post-btn" style="background:#f59e0b; margin-left:10px;" onclick="simulateMpesaPayment()">
+        Post Featured (TZS 5,000)
+    </button>
 </div>
 
 </div>
 
 <script>
+let currentUser = JSON.parse(localStorage.getItem("UBAONI_user"));
+if (!currentUser) window.location.href = "index.html";
 
-const currentUser = JSON.parse(
-    localStorage.getItem("shoutboard_user")
-);
+document.getElementById("welcome").innerText = `Welcome, ${currentUser.name}`;
 
-if(!currentUser){
-    window.location.href = "index.html";
+if (currentUser.name.toLowerCase() === "admin") {
+    document.getElementById("admin-btn").style.display = "inline-flex";
 }
 
-document.getElementById("welcome").innerText =
-    "Welcome, " + currentUser.name;
-
-function logoutUser(){
-
-    localStorage.removeItem("shoutboard_user");
-
-    window.location.href = "index.html";
-}
-
-function postMessage(){
-
-    const message = document.getElementById("message").value;
-
-    if(!message){
-        alert("Please write a message.");
-        return;
+document.addEventListener("keydown", (event) => {
+    if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "m") {
+        if (currentUser.name.toLowerCase() === "admin") {
+            showAdminView();
+        }
     }
+});
 
-    const posts = JSON.parse(
-        localStorage.getItem("shoutboard_posts") || "[]"
-    );
+function postMessage(tier) {
+    const message = document.getElementById("message").value.trim();
+    const category = document.getElementById("category-select").value;
+    const expirationHours = document.getElementById("expiration-select").value;
 
-    posts.unshift({
-        user: currentUser.name,
-        message: message,
-        createdAt: new Date().toLocaleString(),
-        status: "pending"
-    });
+    if (!message) return alert("Please write a message.");
+    if (!category) return alert("Please select a category.");
+    if (!expirationHours) return alert("Please select an expiration time.");
 
-    localStorage.setItem(
-        "shoutboard_posts",
-        JSON.stringify(posts)
-    );
-
-    document.getElementById("message").value = "";
-
-    alert("Message submitted successfully.");
-
-    loadPosts();
+    fetch('http://localhost:3000/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            user_id: currentUser.id,
+            message,
+            category,
+            tier,
+            expiration_hours: Number(expirationHours)
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert("Error: " + data.error);
+        } else {
+            document.getElementById("message").value = "";
+            document.getElementById("category-select").selectedIndex = 0;
+            document.getElementById("expiration-select").selectedIndex = 0;
+            alert(tier === "featured" ? "✅ Featured post published!" : "✅ Message posted successfully.");
+            loadPosts();
+        }
+    })
+    .catch(err => console.error('Post error:', err));
 }
 
-function loadPosts(){
+function simulateMpesaPayment() {
+    if (confirm("Simulate M-Pesa Payment of TZS 5,000?\n\n(Phone: 0712345678)")) {
+        alert("✅ Payment Successful! Posting as Featured...");
+        postMessage("featured");
+    }
+}
 
+function getRemainingTimeLabel(expiresAt) {
+    const now = new Date();
+    const expire = new Date(expiresAt);
+    const diffMs = expire - now;
+    if (diffMs <= 0) return "Expired";
+
+    const minutes = Math.floor(diffMs / 60000);
+    const days = Math.floor(minutes / 1440);
+    const hours = Math.floor((minutes % 1440) / 60);
+    const mins = minutes % 60;
+    const parts = [];
+
+    if (days) parts.push(`${days}d`);
+    if (hours) parts.push(`${hours}h`);
+    if (mins || parts.length === 0) parts.push(`${mins}m`);
+
+    return `Expires in ${parts.join(" ")}`;
+}
+
+function loadPosts(filtered = null) {
     const postsEl = document.getElementById("posts");
-
     postsEl.innerHTML = "";
 
-    const posts = JSON.parse(
-        localStorage.getItem("shoutboard_posts") || "[]"
-    );
+    const url = filtered 
+        ? `http://localhost:3000/api/posts/search/${encodeURIComponent(filtered)}`
+        : 'http://localhost:3000/api/posts';
 
-    posts.forEach(post => {
+    fetch(url)
+    .then(res => res.json())
+    .then(posts => {
+        document.getElementById("post-count").textContent = posts.length;
 
-        const div = document.createElement("div");
+        posts.forEach(post => {
+            const isOwner = post.user_name === currentUser.name;
+            const div = document.createElement("div");
+            div.className = "post";
+            
+            const expirationText = post.expires_at 
+                ? `<br>${getRemainingTimeLabel(post.expires_at)} • Expires: ${new Date(post.expires_at).toLocaleString()}`
+                : '';
 
-        div.className = "post";
+            div.innerHTML = `
+                <span class="tier ${post.tier}">${post.tier === "featured" ? "⭐ Featured" : "Basic"}</span>
+                <span class="category">${post.category}</span>
+                <div style="margin:12px 0; font-size:1.05rem;">${post.message}</div>
+                <div class="small">
+                    ${post.user_name} • ${new Date(post.created_at).toLocaleString()}
+                    ${expirationText}
+                </div>
+                <div style="margin-top:12px;">
+                    <button class="like-btn" onclick="toggleLike(${post.id})">❤️ ${post.likes}</button>
+                    ${isOwner ? `
+                        <button onclick="editPost(${post.id})" style="background:#3498db; font-size:0.85rem;">Edit</button>
+                        <button onclick="deletePost(${post.id})" style="background:#e74c3c; font-size:0.85rem;">Delete</button>
+                    ` : ''}
+                </div>
+            `;
+            postsEl.appendChild(div);
+        });
+    })
+    .catch(err => console.error('Load posts error:', err));
+}
 
-        div.innerHTML = `
-            <div>${post.message}</div>
-            <div class="small">
-                ${post.user} • ${post.createdAt}
-            </div>
-        `;
+function toggleLike(id) {
+    fetch(`http://localhost:3000/api/likes/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert("Error: " + data.error);
+        } else {
+            loadPosts();
+        }
+    })
+    .catch(err => console.error('Like error:', err));
+}
 
-        postsEl.appendChild(div);
-    });
+function deletePost(id) {
+    if (!confirm("Delete this post?")) return;
+    
+    fetch(`http://localhost:3000/api/posts/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert("Error: " + data.error);
+        } else {
+            loadPosts();
+        }
+    })
+    .catch(err => console.error('Delete error:', err));
+}
+
+function editPost(id) {
+    // First fetch the current post
+    fetch('http://localhost:3000/api/posts')
+    .then(res => res.json())
+    .then(posts => {
+        const post = posts.find(p => p.id === id);
+        if (!post) return alert("Post not found");
+
+        const newMessage = prompt("Edit your message:", post.message);
+        if (newMessage && newMessage.trim() !== "") {
+            fetch(`http://localhost:3000/api/posts/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: newMessage.trim(), user_id: currentUser.id })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert("Error: " + data.error);
+                } else {
+                    loadPosts();
+                }
+            })
+            .catch(err => console.error('Edit error:', err));
+        }
+    })
+    .catch(err => console.error('Fetch error:', err));
+}
+
+function filterPosts() {
+    const search = document.getElementById("search-input").value.trim();
+    if (search) {
+        loadPosts(search);
+    } else {
+        loadPosts();
+    }
+}
+
+function showAdminView() {
+    if (currentUser.name.toLowerCase() !== "admin") {
+        return alert("Only administrators can access this view.");
+    }
+
+    fetch(`http://localhost:3000/api/admin/posts?user_id=${currentUser.id}`)
+    .then(res => res.json())
+    .then(posts => {
+        if (posts.error) return alert("Error: " + posts.error);
+
+        let html = "<h3>Admin Moderation</h3><div style='background:#1b2e20;padding:15px;border-radius:10px;'>";
+
+        posts.forEach(post => {
+            html += `
+                <div style="margin:12px 0; padding:12px; background:#2d4732; border-radius:8px;">
+                    <strong>${post.user_name}</strong> (${post.category})<br>
+                    ${post.message}<br>
+                    <small>${new Date(post.created_at).toLocaleString()}</small>
+                    <button onclick="deletePost(${post.id});showAdminView()" style="background:#e74c3c;margin-top:8px;">Delete</button>
+                </div>
+            `;
+        });
+
+        html += "</div>";
+        document.querySelector(".container").innerHTML = html;
+    })
+    .catch(err => console.error('Admin view error:', err));
+}
+
+function logoutUser() {
+    localStorage.removeItem("UBAONI_user");
+    window.location.href = "index.html";
 }
 
 loadPosts();
-
+setInterval(loadPosts, 60000);
 </script>
-
 </body>
 </html>

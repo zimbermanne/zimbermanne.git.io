@@ -1,0 +1,4 @@
+node_modules/
+ubaoni.db
+.env
+*.log

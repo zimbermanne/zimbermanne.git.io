@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ShoutBoard - Access</title>
+<title>UBAONI - Access</title>
 
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -14,9 +14,9 @@ body{
     background:#f7f2e8;
     min-height:100vh;
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:center;
-    padding:20px;
+    padding:20px 16px;
 }
 .container{
     width:100%;
@@ -81,11 +81,41 @@ button.submit{
     display:none;
 }
 @media(max-width:768px){
+    body{
+        align-items:flex-start;
+        padding:16px 12px 24px;
+    }
     .container{
         grid-template-columns:1fr;
+        border-radius:20px;
+    }
+    .left,
+    .right{
+        padding:32px 24px;
     }
     .left{
-        display:none;
+        border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .left h1{
+        font-size:2.5rem;
+    }
+    .tabs{
+        flex-wrap:wrap;
+    }
+    .tabs button{
+        flex:1 1 48%;
+    }
+}
+@media(max-width:480px){
+    .left,
+    .right{
+        padding:24px 18px;
+    }
+    .left h1{
+        font-size:2rem;
+    }
+    .tabs button{
+        flex:1 1 100%;
     }
 }
 </style>
@@ -95,10 +125,10 @@ button.submit{
 <div class="container">
 
 <div class="left">
-    <h1>ShoutBoard</h1>
+    <h1>UBAONI</h1>
     <p>
-        Tanzania's public digital announcement board.<br><br>
-        Create posts, announcements, greetings and public messages.
+        Tanzania's public announcement and community board.<br><br>
+        Post announcements, business ads, greetings, and events.
     </p>
 </div>
 
@@ -135,9 +165,7 @@ button.submit{
 </div>
 
 <script>
-
 function switchTab(tab){
-
     document.getElementById("login-form").style.display =
         tab === "login" ? "block" : "none";
 
@@ -156,34 +184,60 @@ function switchTab(tab){
 }
 
 function registerUser(){
+    const name = document.getElementById("reg-name").value.trim();
+    const phone = document.getElementById("reg-phone").value.trim();
+    const email = document.getElementById("reg-email").value.trim();
+    const password = prompt("Create a password (at least 6 characters):");
 
-    const user = {
-        name: document.getElementById("reg-name").value,
-        phone: document.getElementById("reg-phone").value,
-        email: document.getElementById("reg-email").value
-    };
+    if (!name || !password) {
+        return alert("Name and password are required.");
+    }
+    if (password.length < 6) {
+        return alert("Password must be at least 6 characters.");
+    }
 
-    localStorage.setItem("shoutboard_user", JSON.stringify(user));
-
-    window.location.href = "dashboard.html";
+    fetch('http://localhost:3000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, password })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert("Error: " + data.error);
+        } else {
+            alert("✅ Account created! Logging in...");
+            localStorage.setItem("UBAONI_user", JSON.stringify(data));
+            window.location.href = "dashboard.html";
+        }
+    })
+    .catch(err => alert("Connection error. Is the server running on port 3000?"));
 }
 
 function loginUser(){
+    const name = document.getElementById("login-name").value.trim();
+    const password = prompt("Enter your password:");
 
-    const name = document.getElementById("login-name").value;
-
-    if(!name){
-        alert("Please enter your name.");
-        return;
+    if(!name || !password){
+        return alert("Please enter your name and password.");
     }
 
-    const user = {
-        name: name
-    };
-
-    localStorage.setItem("shoutboard_user", JSON.stringify(user));
-
-    window.location.href = "dashboard.html";
+    fetch('http://localhost:3000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, password })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.error) {
+            alert("Error: " + data.error);
+        } else {
+            alert("✅ Login successful!");
+            localStorage.setItem("UBAONI_user", JSON.stringify(data));
+            window.location.href = "dashboard.html";
+        }
+    })
+    .catch(err => alert("Connection error. Is the server running on port 3000?"));
 }
 </script>
 

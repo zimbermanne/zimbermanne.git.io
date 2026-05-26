@@ -16,11 +16,6 @@
 
 ## 🔧 How to Use
 
-### Posting
-- Choose a **category**
-- Write your message
-- Click **"Post Free"** or **"Post Featured (TZS 5,000)"**
-
 ### Featured Posts
 - Simulated M-Pesa payment flow
 - Lasts **7 days** before auto-expiry

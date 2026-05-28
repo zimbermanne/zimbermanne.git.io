@@ -1,14 +1,24 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "app",
+  "name": "ubaoni",
+  "main": "worker.js",
   "compatibility_date": "2026-05-26",
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS"
   },
   "compatibility_flags": [
     "nodejs_compat"
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "ubaoni-db",
+      // Replace this with the ID printed by: wrangler d1 create ubaoni-db
+      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+    }
   ]
 }

@@ -1,0 +1,183 @@
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 15:11:50"}
+{"level":"info","message":"UBAONI Server Started","service":"ubaoni-api","timestamp":"2026-05-27 15:11:50"}
+{"level":"info","message":"Port: 3000","service":"ubaoni-api","timestamp":"2026-05-27 15:11:50"}
+{"level":"info","message":"Environment: development","service":"ubaoni-api","timestamp":"2026-05-27 15:11:50"}
+{"level":"info","message":"Local JSON storage: C:\\Users\\Kikundi cha uwema\\Documents\\my projects\\zimbermanne.git.io-codespace-online\\data\\app-data.json","service":"ubaoni-api","timestamp":"2026-05-27 15:11:50"}
+{"level":"info","message":"http://localhost:3000","service":"ubaoni-api","timestamp":"2026-05-27 15:11:50"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 15:11:50"}
+{"ip":"::1","level":"info","message":"GET /api/health","service":"ubaoni-api","timestamp":"2026-05-27 15:11:51"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:11:51"}
+{"level":"info","message":"New user registered locally: testuser_1779883911","service":"ubaoni-api","timestamp":"2026-05-27 15:11:52"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:11:52"}
+{"level":"info","message":"User logged in locally: testuser_1779883911","service":"ubaoni-api","timestamp":"2026-05-27 15:11:52"}
+{"ip":"::1","level":"info","message":"POST /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:11:52"}
+{"level":"info","message":"Post created locally - ID: 1, User: 1","service":"ubaoni-api","timestamp":"2026-05-27 15:11:52"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:11:52"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 15:14:00"}
+{"level":"info","message":"UBAONI Server Started","service":"ubaoni-api","timestamp":"2026-05-27 15:14:00"}
+{"level":"info","message":"Port: 3000","service":"ubaoni-api","timestamp":"2026-05-27 15:14:00"}
+{"level":"info","message":"Environment: development","service":"ubaoni-api","timestamp":"2026-05-27 15:14:00"}
+{"level":"info","message":"Local JSON storage: C:\\Users\\Kikundi cha uwema\\Documents\\my projects\\zimbermanne.git.io-codespace-online\\data\\app-data.json","service":"ubaoni-api","timestamp":"2026-05-27 15:14:00"}
+{"level":"info","message":"http://localhost:3000","service":"ubaoni-api","timestamp":"2026-05-27 15:14:00"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 15:14:00"}
+{"ip":"::1","level":"info","message":"GET /api/health","service":"ubaoni-api","timestamp":"2026-05-27 15:14:09"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:22:38"}
+{"level":"info","message":"New user registered locally: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 15:22:38"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:22:41"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/h","service":"ubaoni-api","timestamp":"2026-05-27 15:22:58"}
+{"level":"info","message":"Search executed locally: h (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:22:58"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/ha","service":"ubaoni-api","timestamp":"2026-05-27 15:22:58"}
+{"level":"info","message":"Search executed locally: ha (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:22:58"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hal","service":"ubaoni-api","timestamp":"2026-05-27 15:22:59"}
+{"level":"info","message":"Search executed locally: hal (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:22:59"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hall","service":"ubaoni-api","timestamp":"2026-05-27 15:22:59"}
+{"level":"info","message":"Search executed locally: hall (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:22:59"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo","service":"ubaoni-api","timestamp":"2026-05-27 15:22:59"}
+{"level":"info","message":"Search executed locally: hallo (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:22:59"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo","service":"ubaoni-api","timestamp":"2026-05-27 15:22:59"}
+{"level":"info","message":"Search executed locally: hallo (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:22:59"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20we","service":"ubaoni-api","timestamp":"2026-05-27 15:23:00"}
+{"level":"info","message":"Search executed locally: hallo we (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:00"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20we","service":"ubaoni-api","timestamp":"2026-05-27 15:23:00"}
+{"level":"info","message":"Search executed locally: hallo we (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:00"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20were","service":"ubaoni-api","timestamp":"2026-05-27 15:23:00"}
+{"level":"info","message":"Search executed locally: hallo were (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:00"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20were","service":"ubaoni-api","timestamp":"2026-05-27 15:23:00"}
+{"level":"info","message":"Search executed locally: hallo were (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:00"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20were","service":"ubaoni-api","timestamp":"2026-05-27 15:23:01"}
+{"level":"info","message":"Search executed locally: hallo were (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:01"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20were%20a","service":"ubaoni-api","timestamp":"2026-05-27 15:23:01"}
+{"level":"info","message":"Search executed locally: hallo were a (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:01"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20were%20are","service":"ubaoni-api","timestamp":"2026-05-27 15:23:01"}
+{"level":"info","message":"Search executed locally: hallo were are (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:01"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20were%20are","service":"ubaoni-api","timestamp":"2026-05-27 15:23:01"}
+{"level":"info","message":"Search executed locally: hallo were are (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:01"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20were%20are","service":"ubaoni-api","timestamp":"2026-05-27 15:23:02"}
+{"level":"info","message":"Search executed locally: hallo were are (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:02"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20were%20are%20y","service":"ubaoni-api","timestamp":"2026-05-27 15:23:02"}
+{"level":"info","message":"Search executed locally: hallo were are y (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:02"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20were%20are%20yo","service":"ubaoni-api","timestamp":"2026-05-27 15:23:02"}
+{"level":"info","message":"Search executed locally: hallo were are yo (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:02"}
+{"ip":"::1","level":"info","message":"GET /api/posts/search/hallo%20were%20are%20you","service":"ubaoni-api","timestamp":"2026-05-27 15:23:02"}
+{"level":"info","message":"Search executed locally: hallo were are you (0 results)","service":"ubaoni-api","timestamp":"2026-05-27 15:23:02"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:23:41"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:24:21"}
+{"level":"warn","message":"Login failed for user: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 15:24:21"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:24:28"}
+{"level":"warn","message":"Login failed for user: zimbermann","service":"ubaoni-api","timestamp":"2026-05-27 15:24:28"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:24:41"}
+{"level":"warn","message":"Registration failed - duplicate user: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 15:24:41"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:24:58"}
+{"level":"info","message":"User logged in locally: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 15:24:58"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:25:01"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:26:01"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:27:01"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:28:01"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:29:01"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:30:01"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:31:01"}
+{"ip":"::1","level":"info","message":"POST /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:31:25"}
+{"level":"info","message":"Post created locally - ID: 1, User: 1","service":"ubaoni-api","timestamp":"2026-05-27 15:31:25"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:31:26"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:32:01"}
+{"ip":"::1","level":"info","message":"POST /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:32:03"}
+{"level":"info","message":"Post created locally - ID: 2, User: 1","service":"ubaoni-api","timestamp":"2026-05-27 15:32:03"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:32:06"}
+{"ip":"::1","level":"info","message":"POST /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:32:41"}
+{"level":"info","message":"Post created locally - ID: 3, User: 1","service":"ubaoni-api","timestamp":"2026-05-27 15:32:41"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:32:43"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:32:55"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:33:03"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:33:38"}
+{"ip":"::1","level":"info","message":"GET /api/health","service":"ubaoni-api","timestamp":"2026-05-27 15:34:01"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:34:36"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 15:34:59"}
+{"level":"info","message":"UBAONI Server Started","service":"ubaoni-api","timestamp":"2026-05-27 15:34:59"}
+{"level":"info","message":"Port: 3000","service":"ubaoni-api","timestamp":"2026-05-27 15:34:59"}
+{"level":"info","message":"Environment: development","service":"ubaoni-api","timestamp":"2026-05-27 15:34:59"}
+{"level":"info","message":"Local JSON storage: C:\\Users\\Kikundi cha uwema\\Documents\\my projects\\zimbermanne.git.io-codespace-online\\data\\app-data.json","service":"ubaoni-api","timestamp":"2026-05-27 15:34:59"}
+{"level":"info","message":"http://localhost:3000","service":"ubaoni-api","timestamp":"2026-05-27 15:34:59"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 15:34:59"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:35:29"}
+{"level":"info","message":"New user registered locally: poster_1779885328","service":"ubaoni-api","timestamp":"2026-05-27 15:35:29"}
+{"ip":"::1","level":"info","message":"POST /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:35:29"}
+{"level":"info","message":"Post created locally - ID: 4, User: 2","service":"ubaoni-api","timestamp":"2026-05-27 15:35:29"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:35:29"}
+{"level":"info","message":"New user registered locally: reader_1779885328","service":"ubaoni-api","timestamp":"2026-05-27 15:35:29"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:35:29"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:35:37"}
+{"level":"warn","message":"Login failed for user: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 15:35:38"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:35:44"}
+{"level":"warn","message":"Login failed for user: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 15:35:44"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:35:52"}
+{"level":"warn","message":"Registration failed - duplicate user: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 15:35:52"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:36:07"}
+{"ip":"::1","level":"info","message":"GET /api/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:36:21"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:36:23"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:48:42"}
+{"level":"info","message":"Seeded admin account: admin","service":"ubaoni-api","timestamp":"2026-05-27 15:51:01"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 15:51:01"}
+{"level":"info","message":"UBAONI Server Started","service":"ubaoni-api","timestamp":"2026-05-27 15:51:01"}
+{"level":"info","message":"Port: 3000","service":"ubaoni-api","timestamp":"2026-05-27 15:51:01"}
+{"level":"info","message":"Environment: development","service":"ubaoni-api","timestamp":"2026-05-27 15:51:01"}
+{"level":"info","message":"Local JSON storage: C:\\Users\\Kikundi cha uwema\\Documents\\my projects\\zimbermanne.git.io-codespace-online\\data\\app-data.json","service":"ubaoni-api","timestamp":"2026-05-27 15:51:01"}
+{"level":"info","message":"http://localhost:3000","service":"ubaoni-api","timestamp":"2026-05-27 15:51:01"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 15:51:01"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:51:29"}
+{"level":"info","message":"User logged in locally: admin","service":"ubaoni-api","timestamp":"2026-05-27 15:51:29"}
+{"ip":"::1","level":"info","message":"GET /api/admin/stats","service":"ubaoni-api","timestamp":"2026-05-27 15:51:29"}
+{"ip":"::1","level":"info","message":"GET /api/admin/users","service":"ubaoni-api","timestamp":"2026-05-27 15:51:29"}
+{"ip":"::1","level":"info","message":"GET /api/admin/posts","service":"ubaoni-api","timestamp":"2026-05-27 15:51:29"}
+{"level":"info","message":"Admin accessed local posts - 3 posts","service":"ubaoni-api","timestamp":"2026-05-27 15:51:29"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"level":"info","message":"User logged in locally: admin","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"level":"info","message":"New user registered locally: managed_1779886330","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"ip":"::1","level":"info","message":"PATCH /api/admin/users/3/status","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"level":"info","message":"Admin 2 changed user 3 status to suspended","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"level":"warn","message":"Suspended user login blocked: managed_1779886330","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"ip":"::1","level":"info","message":"POST /api/admin/users/3/reset-password","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"level":"info","message":"Admin 2 reset password for user 3","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"ip":"::1","level":"info","message":"PATCH /api/admin/users/3/status","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"level":"info","message":"Admin 2 changed user 3 status to active","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"level":"info","message":"User logged in locally: managed_1779886330","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"ip":"::1","level":"info","message":"DELETE /api/admin/users/3","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"level":"info","message":"Admin 2 deleted user 3","service":"ubaoni-api","timestamp":"2026-05-27 15:52:10"}
+{"ip":"::1","level":"info","message":"GET /api/admin/stats","service":"ubaoni-api","timestamp":"2026-05-27 15:53:26"}
+{"ip":"::1","level":"info","message":"GET /api/health","service":"ubaoni-api","timestamp":"2026-05-27 15:53:51"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:53:51"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 15:54:13"}
+{"level":"info","message":"UBAONI Server Started","service":"ubaoni-api","timestamp":"2026-05-27 15:54:13"}
+{"level":"info","message":"Port: 3000","service":"ubaoni-api","timestamp":"2026-05-27 15:54:13"}
+{"level":"info","message":"Environment: development","service":"ubaoni-api","timestamp":"2026-05-27 15:54:13"}
+{"level":"info","message":"Local JSON storage: C:\\Users\\Kikundi cha uwema\\Documents\\my projects\\zimbermanne.git.io-codespace-online\\data\\app-data.json","service":"ubaoni-api","timestamp":"2026-05-27 15:54:13"}
+{"level":"info","message":"http://localhost:3000","service":"ubaoni-api","timestamp":"2026-05-27 15:54:13"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 15:54:13"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 15:54:24"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 16:02:45"}
+{"level":"warn","message":"Login failed for user: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 16:02:45"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 16:02:53"}
+{"level":"warn","message":"Login failed for user: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 16:02:53"}
+{"ip":"::1","level":"info","message":"POST /api/register","service":"ubaoni-api","timestamp":"2026-05-27 16:03:01"}
+{"level":"warn","message":"Registration failed - duplicate user: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 16:03:01"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 16:03:08"}
+{"level":"warn","message":"Login failed for user: zimbermann Elite","service":"ubaoni-api","timestamp":"2026-05-27 16:03:08"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 16:03:16"}
+{"ip":"::1","level":"info","message":"POST /api/login","service":"ubaoni-api","timestamp":"2026-05-27 16:03:21"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 16:05:50"}
+{"level":"info","message":"UBAONI Server Started","service":"ubaoni-api","timestamp":"2026-05-27 16:05:50"}
+{"level":"info","message":"Port: 3000","service":"ubaoni-api","timestamp":"2026-05-27 16:05:50"}
+{"level":"info","message":"Environment: development","service":"ubaoni-api","timestamp":"2026-05-27 16:05:50"}
+{"level":"info","message":"Local JSON storage: C:\\Users\\Kikundi cha uwema\\Documents\\my projects\\zimbermanne.git.io-codespace-online\\data\\app-data.json","service":"ubaoni-api","timestamp":"2026-05-27 16:05:50"}
+{"level":"info","message":"http://localhost:3000","service":"ubaoni-api","timestamp":"2026-05-27 16:05:50"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 16:05:50"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 16:07:27"}
+{"level":"info","message":"UBAONI Server Started","service":"ubaoni-api","timestamp":"2026-05-27 16:07:27"}
+{"level":"info","message":"Port: 8080","service":"ubaoni-api","timestamp":"2026-05-27 16:07:27"}
+{"level":"info","message":"Environment: development","service":"ubaoni-api","timestamp":"2026-05-27 16:07:27"}
+{"level":"info","message":"Local JSON storage: C:\\Users\\Kikundi cha uwema\\Documents\\my projects\\zimbermanne.git.io-codespace-online\\data\\app-data.json","service":"ubaoni-api","timestamp":"2026-05-27 16:07:27"}
+{"level":"info","message":"http://localhost:8080","service":"ubaoni-api","timestamp":"2026-05-27 16:07:27"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 16:07:27"}
+{"ip":"::1","level":"info","message":"GET /api/health","service":"ubaoni-api","timestamp":"2026-05-27 16:07:44"}

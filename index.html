@@ -55,18 +55,51 @@ body{
     border-radius:8px;
     cursor:pointer;
     font-weight:700;
+    font-family:'DM Sans',sans-serif;
+    font-size:1rem;
+    transition: background 0.2s, color 0.2s;
 }
 .active-tab{
     background:black;
     color:white;
 }
+.inactive-tab {
+    background: #f0f0f0;
+    color: #555;
+}
+.field-group {
+    position: relative;
+    margin-bottom: 14px;
+}
 input{
     width:100%;
     padding:14px;
-    margin-bottom:14px;
+    padding-right: 44px;
     border-radius:8px;
     border:1px solid #ccc;
+    font-family:'DM Sans',sans-serif;
+    font-size:1rem;
+    transition: border-color 0.2s;
 }
+input:focus {
+    outline: none;
+    border-color: #1b2e20;
+}
+.toggle-pw {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    color: #888;
+    font-size: 1rem;
+    line-height: 1;
+}
+.toggle-pw:hover { color: #333; }
+
 button.submit{
     width:100%;
     padding:14px;
@@ -75,8 +108,28 @@ button.submit{
     background:black;
     color:white;
     font-weight:700;
+    font-family:'DM Sans',sans-serif;
+    font-size:1rem;
     cursor:pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 4px;
 }
+button.submit:hover { background: #222; }
+button.submit:active { transform: scale(0.98); }
+button.submit:disabled {
+    background: #888;
+    cursor: not-allowed;
+}
+
+.error-msg {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: -8px;
+    margin-bottom: 10px;
+    display: none;
+}
+.error-msg.show { display: block; }
+
 #register-form{
     display:none;
 }
@@ -138,107 +191,159 @@ button.submit{
     <button id="login-tab" class="active-tab" onclick="switchTab('login')">
         Sign In
     </button>
-
-    <button id="register-tab" onclick="switchTab('register')">
+    <button id="register-tab" class="inactive-tab" onclick="switchTab('register')">
         Create Account
     </button>
 </div>
 
 <div id="login-form">
-    <input type="text" id="login-name" placeholder="Enter Your Name">
-    <button class="submit" onclick="loginUser()">
-        Enter Dashboard
-    </button>
+    <div class="field-group">
+        <input type="text" id="login-name" placeholder="Your Name" autocomplete="username">
+    </div>
+    <div class="field-group">
+        <input type="password" id="login-password" placeholder="Password" autocomplete="current-password">
+        <button type="button" class="toggle-pw" onclick="togglePw('login-password', this)" title="Show/hide password">👁</button>
+    </div>
+    <div class="error-msg" id="login-error"></div>
+    <button class="submit" id="login-btn" onclick="loginUser()">Enter Dashboard</button>
 </div>
 
 <div id="register-form">
-    <input type="text" id="reg-name" placeholder="Full Name">
-    <input type="text" id="reg-phone" placeholder="Phone Number">
-    <input type="email" id="reg-email" placeholder="Email Address">
-
-    <button class="submit" onclick="registerUser()">
-        Create Account
-    </button>
+    <div class="field-group">
+        <input type="text" id="reg-name" placeholder="Full Name" autocomplete="name">
+    </div>
+    <div class="field-group">
+        <input type="text" id="reg-phone" placeholder="Phone Number" autocomplete="tel">
+    </div>
+    <div class="field-group">
+        <input type="email" id="reg-email" placeholder="Email Address" autocomplete="email">
+    </div>
+    <div class="field-group">
+        <input type="password" id="reg-password" placeholder="Password (min. 6 characters)" autocomplete="new-password">
+        <button type="button" class="toggle-pw" onclick="togglePw('reg-password', this)" title="Show/hide password">👁</button>
+    </div>
+    <div class="error-msg" id="register-error"></div>
+    <button class="submit" id="register-btn" onclick="registerUser()">Create Account</button>
 </div>
 
 </div>
 </div>
 
 <script>
+// Empty string = relative URLs (/api/...) — works on localhost AND in production
+const API = '';
+
 function switchTab(tab){
-    document.getElementById("login-form").style.display =
-        tab === "login" ? "block" : "none";
-
-    document.getElementById("register-form").style.display =
-        tab === "register" ? "block" : "none";
-
-    document.getElementById("login-tab").classList.toggle(
-        "active-tab",
-        tab === "login"
-    );
-
-    document.getElementById("register-tab").classList.toggle(
-        "active-tab",
-        tab === "register"
-    );
+    document.getElementById("login-form").style.display   = tab === "login"    ? "block" : "none";
+    document.getElementById("register-form").style.display = tab === "register" ? "block" : "none";
+    document.getElementById("login-tab").className    = tab === "login"    ? "active-tab" : "inactive-tab";
+    document.getElementById("register-tab").className  = tab === "register" ? "active-tab" : "inactive-tab";
+    document.getElementById("login-error").classList.remove("show");
+    document.getElementById("register-error").classList.remove("show");
 }
 
+function togglePw(fieldId, btn) {
+    const input = document.getElementById(fieldId);
+    if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "🙈";
+    } else {
+        input.type = "password";
+        btn.textContent = "👁";
+    }
+}
+
+function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg;
+    el.classList.add("show");
+}
+
+function setLoading(btnId, loading) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.textContent = loading ? "Please wait…" : btn.dataset.label;
+}
+
+// Store original labels
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("login-btn").dataset.label    = "Enter Dashboard";
+    document.getElementById("register-btn").dataset.label = "Create Account";
+});
+
 function registerUser(){
-    const name = document.getElementById("reg-name").value.trim();
-    const phone = document.getElementById("reg-phone").value.trim();
-    const email = document.getElementById("reg-email").value.trim();
-    const password = prompt("Create a password (at least 6 characters):");
+    const name     = document.getElementById("reg-name").value.trim();
+    const phone    = document.getElementById("reg-phone").value.trim();
+    const email    = document.getElementById("reg-email").value.trim();
+    const password = document.getElementById("reg-password").value;
 
-    if (!name || !password) {
-        return alert("Name and password are required.");
-    }
-    if (password.length < 6) {
-        return alert("Password must be at least 6 characters.");
-    }
+    document.getElementById("register-error").classList.remove("show");
 
-    fetch('http://localhost:3000/api/register', {
+    if (!name)          return showError("register-error", "Please enter your name.");
+    if (!password)      return showError("register-error", "Please create a password.");
+    if (password.length < 6) return showError("register-error", "Password must be at least 6 characters.");
+
+    setLoading("register-btn", true);
+
+    fetch(`${API}/api/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, phone, password })
     })
     .then(res => res.json())
     .then(data => {
+        setLoading("register-btn", false);
         if (data.error) {
-            alert("Error: " + data.error);
+            showError("register-error", data.error);
         } else {
-            alert("✅ Account created! Logging in...");
             localStorage.setItem("UBAONI_user", JSON.stringify(data));
             window.location.href = "dashboard.html";
         }
     })
-    .catch(err => alert("Connection error. Is the server running on port 3000?"));
+    .catch(() => {
+        setLoading("register-btn", false);
+        showError("register-error", "Connection error. Is the server running on port 3000?");
+    });
 }
 
 function loginUser(){
-    const name = document.getElementById("login-name").value.trim();
-    const password = prompt("Enter your password:");
+    const name     = document.getElementById("login-name").value.trim();
+    const password = document.getElementById("login-password").value;
 
-    if(!name || !password){
-        return alert("Please enter your name and password.");
-    }
+    document.getElementById("login-error").classList.remove("show");
 
-    fetch('http://localhost:3000/api/login', {
+    if (!name)     return showError("login-error", "Please enter your name.");
+    if (!password) return showError("login-error", "Please enter your password.");
+
+    setLoading("login-btn", true);
+
+    fetch(`${API}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, password })
     })
     .then(res => res.json())
     .then(data => {
+        setLoading("login-btn", false);
         if (data.error) {
-            alert("Error: " + data.error);
+            showError("login-error", data.error);
         } else {
-            alert("✅ Login successful!");
             localStorage.setItem("UBAONI_user", JSON.stringify(data));
             window.location.href = "dashboard.html";
         }
     })
-    .catch(err => alert("Connection error. Is the server running on port 3000?"));
+    .catch(() => {
+        setLoading("login-btn", false);
+        showError("login-error", "Connection error. Is the server running on port 3000?");
+    });
 }
+
+// Allow Enter key to submit
+document.addEventListener("keydown", e => {
+    if (e.key !== "Enter") return;
+    const loginVisible = document.getElementById("login-form").style.display !== "none";
+    if (loginVisible) loginUser(); else registerUser();
+});
 </script>
 
 </body>

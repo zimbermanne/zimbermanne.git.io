@@ -13,345 +13,587 @@ body{
     background:#1b2e20;
     color:white;
 }
+
+/* ── Nav ── */
 nav{
     background:#2d4732;
-    padding:16px 30px;
+    padding:14px 20px;
     display:flex;
     justify-content:space-between;
     align-items:center;
+    position:sticky;
+    top:0;
+    z-index:100;
+    box-shadow:0 2px 8px rgba(0,0,0,.3);
 }
+nav h2 { font-size:1.2rem; }
+
+.nav-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+
 button{
     padding:10px 16px;
     border:none;
     border-radius:8px;
     cursor:pointer;
     font-weight:700;
+    font-family:'DM Sans',sans-serif;
+    font-size:0.9rem;
+    transition: opacity 0.15s, transform 0.1s;
 }
-.logout { background:#e74c3c; color:white; }
+button:hover  { opacity: 0.88; }
+button:active { transform: scale(0.97); }
 
-.container { max-width:1100px; margin:auto; padding:30px 20px; }
+.logout { background:#e74c3c; color:white; }
+.btn-admin { background:#27ae60; color:white; display:none; }
+
+/* ── Layout ── */
+.container { max-width:1100px; margin:auto; padding:24px 16px; }
+
+/* ── Cards ── */
 .card {
     background:#223626;
-    padding:24px;
+    padding:20px;
     border-radius:12px;
-    margin-bottom:24px;
+    margin-bottom:20px;
 }
+
+/* ── Form elements ── */
 textarea, select, input {
     width:100%;
-    padding:14px;
+    padding:12px 14px;
     border-radius:10px;
     border:none;
     margin-top:8px;
     background:#1b2e20;
     color:white;
+    font-family:'DM Sans',sans-serif;
+    font-size:0.95rem;
 }
+textarea { resize:vertical; min-height:100px; }
+select option { background:#1b2e20; }
+
+/* ── Compose grid (desktop: side-by-side selects) ── */
+.compose-selects {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+.compose-selects select { margin-top: 0; }
+
 .post-btn {
     margin-top:14px;
     background:#f1c40f;
     color:black;
-    padding:14px 24px;
+    padding:14px 20px;
+    font-size:1rem;
 }
+.post-btn.featured { background:#f59e0b; }
+
+.post-actions {
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:14px;
+}
+
+/* ── Post cards ── */
 .post {
     background:#2d4732;
-    padding:18px;
+    padding:16px;
     border-radius:10px;
-    margin-bottom:16px;
+    margin-bottom:14px;
     position:relative;
 }
-.small { opacity:.75; font-size:.85rem; margin-top:8px; }
-.tier { font-size:0.8rem; padding:4px 10px; border-radius:20px; display:inline-block; margin-bottom:8px; }
-.basic { background:#3b82f6; }
+.post:last-child { margin-bottom:0; }
+
+.post-meta { font-size:.82rem; opacity:.7; margin-top:6px; }
+.post-body { margin:10px 0; font-size:1rem; line-height:1.5; }
+.post-footer { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:10px; }
+
+.tier { font-size:0.78rem; padding:3px 10px; border-radius:20px; display:inline-block; }
+.basic    { background:#3b82f6; }
 .featured { background:#f59e0b; color:black; }
 .category { font-size:0.75rem; padding:2px 8px; background:#344837; border-radius:12px; }
 
 .like-btn {
-    background:none;
+    background:rgba(255,255,255,.08);
     border:none;
-    font-size:1.3rem;
+    font-size:0.9rem;
     cursor:pointer;
-    margin-right:8px;
+    padding:6px 12px;
+    border-radius:20px;
+    color:white;
+    font-weight:600;
+    transition: background 0.15s;
+}
+.like-btn:hover { background:rgba(255,255,255,.15); }
+
+.btn-edit   { background:#3498db; color:white; font-size:0.8rem; padding:6px 12px; }
+.btn-delete { background:#e74c3c; color:white; font-size:0.8rem; padding:6px 12px; }
+
+/* ── Loading spinner ── */
+.spinner-wrap {
+    display:none;
+    text-align:center;
+    padding:30px 0;
+}
+.spinner-wrap.show { display:block; }
+.spinner {
+    width:36px;
+    height:36px;
+    border:4px solid rgba(255,255,255,.15);
+    border-top-color:#f1c40f;
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+    display:inline-block;
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.empty-state {
+    text-align:center;
+    padding:30px;
+    opacity:.5;
+    display:none;
+}
+.empty-state.show { display:block; }
+
+/* ── Admin modal ── */
+.modal-overlay {
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    z-index:200;
+    display:none;
+    align-items:flex-start;
+    justify-content:center;
+    padding:20px;
+    overflow-y:auto;
+}
+.modal-overlay.show { display:flex; }
+.modal-box {
+    background:#223626;
+    border-radius:14px;
+    width:100%;
+    max-width:720px;
+    padding:24px;
+    margin:auto;
+    position:relative;
+}
+.modal-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:18px;
+}
+.modal-close {
+    background:rgba(255,255,255,.1);
+    color:white;
+    font-size:1.1rem;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+.admin-post {
+    background:#2d4732;
+    border-radius:8px;
+    padding:14px;
+    margin-bottom:12px;
+}
+.admin-post:last-child { margin-bottom:0; }
+
+/* ── Toast notification ── */
+.toast {
+    position:fixed;
+    bottom:24px;
+    left:50%;
+    transform:translateX(-50%) translateY(80px);
+    background:#223626;
+    border:1px solid #3d5c42;
+    color:white;
+    padding:12px 24px;
+    border-radius:30px;
+    font-weight:600;
+    font-size:0.9rem;
+    z-index:300;
+    transition:transform 0.3s ease;
+    white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0); }
+.toast.success { border-color:#27ae60; }
+.toast.error   { border-color:#e74c3c; }
+
+/* ── Search ── */
+#search-input { margin-top:0; }
+
+/* ── Responsive ── */
+@media(max-width:640px){
+    nav { padding:12px 14px; }
+    nav h2 { font-size:1rem; }
+    button { padding:8px 12px; font-size:0.82rem; }
+    .card { padding:16px; }
+    .compose-selects { grid-template-columns:1fr; }
+    .post-actions { flex-direction:column; }
+    .post-btn { width:100%; text-align:center; }
+    .container { padding:16px 12px; }
 }
 </style>
 </head>
 <body>
 
 <nav>
-    <h2>UBAONI Dashboard</h2>
-    <div>
-        <button id="admin-btn" onclick="showAdminView()" style="background:#27ae60; margin-right:10px; display:none;">👮 Admin</button>
+    <h2>🌍 UBAONI</h2>
+    <div class="nav-actions">
+        <button id="admin-btn" class="btn-admin" onclick="openAdminModal()">👮 Admin</button>
         <button class="logout" onclick="logoutUser()">Logout</button>
     </div>
 </nav>
 
 <div class="container">
 
-<div class="card">
-    <h3 id="welcome"></h3>
-    <p class="small">Manage your posts below, search the board, and like messages you enjoy.</p>
-</div>
-
-<div class="card">
-    <h3>Live Board (<span id="post-count">0</span>)</h3>
-    <div style="margin:16px 0;">
-        <input type="text" id="search-input" placeholder="Search messages, users, or categories..." onkeyup="filterPosts()">
+    <!-- Welcome -->
+    <div class="card">
+        <h3 id="welcome"></h3>
+        <p style="opacity:.7;margin-top:4px;font-size:.9rem;">Browse the board, search posts, and share your own message.</p>
     </div>
-    <div id="posts"></div>
+
+    <!-- Board -->
+    <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+            <h3>Live Board <span style="opacity:.6;font-weight:400;font-size:.95rem;">(<span id="post-count">0</span> posts)</span></h3>
+        </div>
+        <input type="text" id="search-input" placeholder="Search messages, users, or categories…" oninput="filterPosts()">
+        <div id="spinner-wrap" class="spinner-wrap" style="margin-top:16px;">
+            <div class="spinner"></div>
+            <p style="margin-top:10px;opacity:.5;font-size:.85rem;">Loading posts…</p>
+        </div>
+        <div id="empty-state" class="empty-state">
+            <div style="font-size:2rem;margin-bottom:8px;">📭</div>
+            No posts yet. Be the first to post!
+        </div>
+        <div id="posts" style="margin-top:16px;"></div>
+    </div>
+
+    <!-- Compose -->
+    <div class="card">
+        <h3 style="margin-bottom:12px;">Write Your Message</h3>
+        <div class="compose-selects">
+            <select id="category-select">
+                <option value="">Select Category</option>
+                <option value="Announcement">Announcement</option>
+                <option value="Business">Business / Ad</option>
+                <option value="Greeting">Greeting</option>
+                <option value="Event">Event</option>
+                <option value="Other">Other</option>
+            </select>
+            <select id="expiration-select">
+                <option value="">Select Expiration</option>
+                <option value="24">1 day</option>
+                <option value="48">2 days</option>
+                <option value="120">5 days</option>
+                <option value="336">2 weeks</option>
+            </select>
+        </div>
+        <textarea id="message" placeholder="Write your announcement, ad, or greeting…"></textarea>
+        <div class="post-actions">
+            <button class="post-btn" onclick="postMessage('basic')">📌 Post Free</button>
+            <button class="post-btn featured" onclick="simulateMpesaPayment()">⭐ Post Featured (TZS 5,000)</button>
+        </div>
+    </div>
+
 </div>
 
-<div class="card">
-    <h3>Write Your Message</h3>
-    <select id="category-select">
-        <option value="">Select Category</option>
-        <option value="Announcement">Announcement</option>
-        <option value="Business">Business / Ad</option>
-        <option value="Greeting">Greeting</option>
-        <option value="Event">Event</option>
-        <option value="Other">Other</option>
-    </select>
-
-    <select id="expiration-select">
-        <option value="">Select Expiration</option>
-        <option value="24">1 day</option>
-        <option value="48">2 days</option>
-        <option value="120">5 days</option>
-        <option value="336">2 weeks</option>
-    </select>
-
-    <textarea id="message" placeholder="Write your announcement, ad, or greeting..."></textarea>
-    
-    <button class="post-btn" onclick="postMessage('basic')">Post Free</button>
-    <button class="post-btn" style="background:#f59e0b; margin-left:10px;" onclick="simulateMpesaPayment()">
-        Post Featured (TZS 5,000)
-    </button>
+<!-- Admin Modal -->
+<div id="admin-modal" class="modal-overlay" onclick="handleModalClick(event)">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>👮 Admin Moderation</h3>
+            <button class="modal-close" onclick="closeAdminModal()">✕</button>
+        </div>
+        <div id="admin-spinner" class="spinner-wrap">
+            <div class="spinner"></div>
+        </div>
+        <div id="admin-posts"></div>
+    </div>
 </div>
 
-</div>
+<!-- Toast -->
+<div id="toast" class="toast"></div>
 
 <script>
+// Empty string = relative URLs (/api/...) — works on localhost AND in production
+const API = '';
 let currentUser = JSON.parse(localStorage.getItem("UBAONI_user"));
 if (!currentUser) window.location.href = "index.html";
 
-document.getElementById("welcome").innerText = `Welcome, ${currentUser.name}`;
+document.getElementById("welcome").textContent = `Welcome back, ${currentUser.name} 👋`;
 
 if (currentUser.name.toLowerCase() === "admin") {
     document.getElementById("admin-btn").style.display = "inline-flex";
 }
 
-document.addEventListener("keydown", (event) => {
-    if (event.ctrlKey && event.altKey && event.key.toLowerCase() === "m") {
-        if (currentUser.name.toLowerCase() === "admin") {
-            showAdminView();
-        }
+// Ctrl+Alt+M shortcut
+document.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "m" && currentUser.name.toLowerCase() === "admin") {
+        openAdminModal();
     }
 });
 
+/* ── Toast ── */
+let toastTimer;
+function showToast(msg, type = "success") {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = `toast show ${type}`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 3000);
+}
+
+/* ── Posts ── */
+function setLoading(show) {
+    document.getElementById("spinner-wrap").classList.toggle("show", show);
+    if (show) document.getElementById("posts").innerHTML = "";
+}
+
 function postMessage(tier) {
-    const message = document.getElementById("message").value.trim();
-    const category = document.getElementById("category-select").value;
+    const message        = document.getElementById("message").value.trim();
+    const category       = document.getElementById("category-select").value;
     const expirationHours = document.getElementById("expiration-select").value;
 
-    if (!message) return alert("Please write a message.");
-    if (!category) return alert("Please select a category.");
-    if (!expirationHours) return alert("Please select an expiration time.");
+    if (!message)         return showToast("Please write a message.", "error");
+    if (!category)        return showToast("Please select a category.", "error");
+    if (!expirationHours) return showToast("Please select an expiration time.", "error");
 
-    fetch('http://localhost:3000/api/posts', {
+    fetch(`${API}/api/posts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            user_id: currentUser.id,
-            message,
-            category,
-            tier,
-            expiration_hours: Number(expirationHours)
-        })
+        body: JSON.stringify({ user_id: currentUser.id, message, category, tier, expiration_hours: Number(expirationHours) })
     })
-    .then(res => res.json())
+    .then(r => r.json())
     .then(data => {
-        if (data.error) {
-            alert("Error: " + data.error);
-        } else {
-            document.getElementById("message").value = "";
-            document.getElementById("category-select").selectedIndex = 0;
-            document.getElementById("expiration-select").selectedIndex = 0;
-            alert(tier === "featured" ? "✅ Featured post published!" : "✅ Message posted successfully.");
-            loadPosts();
-        }
+        if (data.error) { showToast(data.error, "error"); return; }
+        document.getElementById("message").value = "";
+        document.getElementById("category-select").selectedIndex = 0;
+        document.getElementById("expiration-select").selectedIndex = 0;
+        showToast(tier === "featured" ? "⭐ Featured post published!" : "✅ Message posted!");
+        loadPosts();
     })
-    .catch(err => console.error('Post error:', err));
+    .catch(() => showToast("Connection error.", "error"));
 }
 
 function simulateMpesaPayment() {
     if (confirm("Simulate M-Pesa Payment of TZS 5,000?\n\n(Phone: 0712345678)")) {
-        alert("✅ Payment Successful! Posting as Featured...");
+        showToast("✅ Payment successful! Posting as Featured…");
         postMessage("featured");
     }
 }
 
 function getRemainingTimeLabel(expiresAt) {
-    const now = new Date();
-    const expire = new Date(expiresAt);
-    const diffMs = expire - now;
+    const diffMs = new Date(expiresAt) - new Date();
     if (diffMs <= 0) return "Expired";
-
     const minutes = Math.floor(diffMs / 60000);
-    const days = Math.floor(minutes / 1440);
+    const days  = Math.floor(minutes / 1440);
     const hours = Math.floor((minutes % 1440) / 60);
-    const mins = minutes % 60;
+    const mins  = minutes % 60;
     const parts = [];
-
-    if (days) parts.push(`${days}d`);
+    if (days)  parts.push(`${days}d`);
     if (hours) parts.push(`${hours}h`);
     if (mins || parts.length === 0) parts.push(`${mins}m`);
-
     return `Expires in ${parts.join(" ")}`;
 }
 
 function loadPosts(filtered = null) {
-    const postsEl = document.getElementById("posts");
-    postsEl.innerHTML = "";
+    setLoading(true);
+    document.getElementById("empty-state").classList.remove("show");
 
-    const url = filtered 
-        ? `http://localhost:3000/api/posts/search/${encodeURIComponent(filtered)}`
-        : 'http://localhost:3000/api/posts';
+    const url = filtered
+        ? `${API}/api/posts/search/${encodeURIComponent(filtered)}`
+        : `${API}/api/posts`;
 
     fetch(url)
-    .then(res => res.json())
+    .then(r => r.json())
     .then(posts => {
+        setLoading(false);
         document.getElementById("post-count").textContent = posts.length;
+        const postsEl = document.getElementById("posts");
 
+        if (!posts.length) {
+            document.getElementById("empty-state").classList.add("show");
+            return;
+        }
+
+        postsEl.innerHTML = "";
         posts.forEach(post => {
             const isOwner = post.user_name === currentUser.name;
-            const div = document.createElement("div");
-            div.className = "post";
-            
-            const expirationText = post.expires_at 
-                ? `<br>${getRemainingTimeLabel(post.expires_at)} • Expires: ${new Date(post.expires_at).toLocaleString()}`
+            const expText = post.expires_at
+                ? `· ${getRemainingTimeLabel(post.expires_at)}`
                 : '';
 
+            const div = document.createElement("div");
+            div.className = "post";
             div.innerHTML = `
-                <span class="tier ${post.tier}">${post.tier === "featured" ? "⭐ Featured" : "Basic"}</span>
-                <span class="category">${post.category}</span>
-                <div style="margin:12px 0; font-size:1.05rem;">${post.message}</div>
-                <div class="small">
-                    ${post.user_name} • ${new Date(post.created_at).toLocaleString()}
-                    ${expirationText}
+                <div>
+                    <span class="tier ${post.tier}">${post.tier === "featured" ? "⭐ Featured" : "Basic"}</span>
+                    <span class="category">${post.category}</span>
                 </div>
-                <div style="margin-top:12px;">
+                <div class="post-body">${post.message}</div>
+                <div class="post-meta">
+                    <strong>${post.user_name}</strong> · ${new Date(post.created_at).toLocaleString()} ${expText}
+                </div>
+                <div class="post-footer">
                     <button class="like-btn" onclick="toggleLike(${post.id})">❤️ ${post.likes}</button>
                     ${isOwner ? `
-                        <button onclick="editPost(${post.id})" style="background:#3498db; font-size:0.85rem;">Edit</button>
-                        <button onclick="deletePost(${post.id})" style="background:#e74c3c; font-size:0.85rem;">Delete</button>
+                        <button class="btn-edit" onclick="editPost(${post.id})">Edit</button>
+                        <button class="btn-delete" onclick="deletePost(${post.id})">Delete</button>
                     ` : ''}
                 </div>
             `;
             postsEl.appendChild(div);
         });
     })
-    .catch(err => console.error('Load posts error:', err));
+    .catch(() => {
+        setLoading(false);
+        showToast("Failed to load posts.", "error");
+    });
 }
 
 function toggleLike(id) {
-    fetch(`http://localhost:3000/api/likes/${id}`, {
+    fetch(`${API}/api/likes/${id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: currentUser.id })
     })
-    .then(res => res.json())
+    .then(r => r.json())
     .then(data => {
-        if (data.error) {
-            alert("Error: " + data.error);
-        } else {
-            loadPosts();
-        }
+        if (data.error) showToast(data.error, "error");
+        else loadPosts(document.getElementById("search-input").value.trim() || null);
     })
-    .catch(err => console.error('Like error:', err));
+    .catch(() => showToast("Like failed.", "error"));
 }
 
 function deletePost(id) {
     if (!confirm("Delete this post?")) return;
-    
-    fetch(`http://localhost:3000/api/posts/${id}`, {
+    fetch(`${API}/api/posts/${id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: currentUser.id })
     })
-    .then(res => res.json())
+    .then(r => r.json())
     .then(data => {
-        if (data.error) {
-            alert("Error: " + data.error);
-        } else {
-            loadPosts();
-        }
+        if (data.error) { showToast(data.error, "error"); return; }
+        showToast("Post deleted.");
+        loadPosts();
     })
-    .catch(err => console.error('Delete error:', err));
+    .catch(() => showToast("Delete failed.", "error"));
 }
 
 function editPost(id) {
-    // First fetch the current post
-    fetch('http://localhost:3000/api/posts')
-    .then(res => res.json())
+    fetch(`${API}/api/posts`)
+    .then(r => r.json())
     .then(posts => {
         const post = posts.find(p => p.id === id);
-        if (!post) return alert("Post not found");
-
+        if (!post) return showToast("Post not found.", "error");
         const newMessage = prompt("Edit your message:", post.message);
-        if (newMessage && newMessage.trim() !== "") {
-            fetch(`http://localhost:3000/api/posts/${id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: newMessage.trim(), user_id: currentUser.id })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.error) {
-                    alert("Error: " + data.error);
-                } else {
-                    loadPosts();
-                }
-            })
-            .catch(err => console.error('Edit error:', err));
-        }
-    })
-    .catch(err => console.error('Fetch error:', err));
+        if (!newMessage || !newMessage.trim()) return;
+        fetch(`${API}/api/posts/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: newMessage.trim(), user_id: currentUser.id })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) showToast(data.error, "error");
+            else { showToast("Post updated."); loadPosts(); }
+        })
+        .catch(() => showToast("Edit failed.", "error"));
+    });
 }
 
+let filterTimer;
 function filterPosts() {
-    const search = document.getElementById("search-input").value.trim();
-    if (search) {
-        loadPosts(search);
-    } else {
-        loadPosts();
-    }
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(() => {
+        const q = document.getElementById("search-input").value.trim();
+        loadPosts(q || null);
+    }, 300);
 }
 
-function showAdminView() {
-    if (currentUser.name.toLowerCase() !== "admin") {
-        return alert("Only administrators can access this view.");
-    }
+/* ── Admin modal ── */
+function openAdminModal() {
+    if (currentUser.name.toLowerCase() !== "admin") return;
+    document.getElementById("admin-modal").classList.add("show");
+    document.body.style.overflow = "hidden";
+    loadAdminPosts();
+}
 
-    fetch(`http://localhost:3000/api/admin/posts?user_id=${currentUser.id}`)
-    .then(res => res.json())
+function closeAdminModal() {
+    document.getElementById("admin-modal").classList.remove("show");
+    document.body.style.overflow = "";
+}
+
+function handleModalClick(e) {
+    if (e.target === document.getElementById("admin-modal")) closeAdminModal();
+}
+
+function loadAdminPosts() {
+    const spinner   = document.getElementById("admin-spinner");
+    const container = document.getElementById("admin-posts");
+    spinner.classList.add("show");
+    container.innerHTML = "";
+
+    fetch(`${API}/api/admin/posts?user_id=${currentUser.id}`)
+    .then(r => r.json())
     .then(posts => {
-        if (posts.error) return alert("Error: " + posts.error);
-
-        let html = "<h3>Admin Moderation</h3><div style='background:#1b2e20;padding:15px;border-radius:10px;'>";
+        spinner.classList.remove("show");
+        if (posts.error) { showToast(posts.error, "error"); closeAdminModal(); return; }
+        if (!posts.length) { container.innerHTML = '<p style="opacity:.5;text-align:center;padding:20px;">No posts found.</p>'; return; }
 
         posts.forEach(post => {
-            html += `
-                <div style="margin:12px 0; padding:12px; background:#2d4732; border-radius:8px;">
-                    <strong>${post.user_name}</strong> (${post.category})<br>
-                    ${post.message}<br>
-                    <small>${new Date(post.created_at).toLocaleString()}</small>
-                    <button onclick="deletePost(${post.id});showAdminView()" style="background:#e74c3c;margin-top:8px;">Delete</button>
+            const div = document.createElement("div");
+            div.className = "admin-post";
+            div.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:0;">
+                        <strong>${post.user_name}</strong>
+                        <span class="category" style="margin-left:6px;">${post.category}</span>
+                        <div style="margin:8px 0;font-size:.95rem;">${post.message}</div>
+                        <div style="font-size:.8rem;opacity:.6;">${new Date(post.created_at).toLocaleString()}</div>
+                    </div>
+                    <button class="btn-delete" onclick="adminDelete(${post.id}, this)">Delete</button>
                 </div>
             `;
+            container.appendChild(div);
         });
-
-        html += "</div>";
-        document.querySelector(".container").innerHTML = html;
     })
-    .catch(err => console.error('Admin view error:', err));
+    .catch(() => { spinner.classList.remove("show"); showToast("Failed to load admin posts.", "error"); });
 }
+
+function adminDelete(id, btn) {
+    if (!confirm("Delete this post?")) return;
+    btn.disabled = true;
+    fetch(`${API}/api/posts/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) { showToast(data.error, "error"); btn.disabled = false; return; }
+        showToast("Post deleted.");
+        btn.closest(".admin-post").remove();
+        loadPosts();
+    })
+    .catch(() => { showToast("Delete failed.", "error"); btn.disabled = false; });
+}
+
+// Escape key closes modal
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeAdminModal();
+});
 
 function logoutUser() {
     localStorage.removeItem("UBAONI_user");

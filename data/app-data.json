@@ -1,0 +1,57 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "zimbermann Elite",
+      "email": "zimbermannelit@gmail.com",
+      "phone": "0620563248",
+      "password_hash": "$2b$10$Tu6VH1j2Q5X95I63I3y0YeF6hfyAm8icvp/uJJArm6uyuDT1jbEMi",
+      "created_at": "2026-05-27T12:22:38.917Z",
+      "role": "user",
+      "status": "active"
+    },
+    {
+      "id": 2,
+      "name": "admin",
+      "email": "admin@ubaoni.local",
+      "phone": null,
+      "role": "admin",
+      "status": "active",
+      "password_hash": "$2b$10$GlRH6SlX.qVDOKCHlHTeQ.jOmgRV/JBBy0IozPR/Y9Erj1fVMSuOm",
+      "created_at": "2026-05-27T12:51:01.153Z"
+    }
+  ],
+  "posts": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "message": "were arevvyo",
+      "category": "Event",
+      "tier": "basic",
+      "likes": 0,
+      "created_at": "2026-05-27T12:31:25.110Z",
+      "expires_at": "2026-05-28T12:31:25.110Z"
+    },
+    {
+      "id": 2,
+      "user_id": 1,
+      "message": "wa ssikia kac",
+      "category": "Announcement",
+      "tier": "basic",
+      "likes": 0,
+      "created_at": "2026-05-27T12:32:03.986Z",
+      "expires_at": "2026-05-29T12:32:03.986Z"
+    },
+    {
+      "id": 3,
+      "user_id": 1,
+      "message": "where is everyone",
+      "category": "Business",
+      "tier": "basic",
+      "likes": 0,
+      "created_at": "2026-05-27T12:32:41.228Z",
+      "expires_at": "2026-06-10T12:32:41.228Z"
+    }
+  ],
+  "likes": []
+}

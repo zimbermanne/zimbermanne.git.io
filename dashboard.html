@@ -321,29 +321,44 @@ select option { background:#1b2e20; }
     </div>
 </div>
 
+<!-- Edit Post Modal -->
+<div id="edit-modal" class="modal-overlay" onclick="handleEditModalClick(event)">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3>✏️ Edit Message</h3>
+            <button class="modal-close" onclick="closeEditModal()">✕</button>
+        </div>
+        <textarea id="edit-message" placeholder="Edit your message…" style="margin:16px 0;"></textarea>
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button onclick="closeEditModal()" style="background:#6c757d;color:white;padding:10px 16px;border:none;border-radius:8px;cursor:pointer;">Cancel</button>
+            <button onclick="submitEditPost()" style="background:#f1c40f;color:black;padding:10px 16px;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Save</button>
+        </div>
+    </div>
+</div>
+
 <!-- Toast -->
 <div id="toast" class="toast"></div>
 
 <script>
-// Empty string = relative URLs (/api/...) — works on localhost AND in production
-const API = '';
+// Point dynamically to host URL
+const API = window.location.origin;
 let currentUser = JSON.parse(localStorage.getItem("UBAONI_user"));
 if (!currentUser) window.location.href = "index.html";
 
 document.getElementById("welcome").textContent = `Welcome back, ${currentUser.name} 👋`;
 
-if (currentUser.name.toLowerCase() === "admin") {
+if (currentUser.role === "admin") {
     document.getElementById("admin-btn").style.display = "inline-flex";
 }
 
-// Ctrl+Alt+M shortcut
+// Ctrl+Alt+M shortcut for admin interface access
 document.addEventListener("keydown", e => {
-    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "m" && currentUser.name.toLowerCase() === "admin") {
+    if (e.ctrlKey && e.altKey && e.key.toLowerCase() === "m" && currentUser.role === "admin") {
         openAdminModal();
     }
 });
 
-/* ── Toast ── */
+/* ── Toast Notifications ── */
 let toastTimer;
 function showToast(msg, type = "success") {
     const t = document.getElementById("toast");
@@ -353,7 +368,7 @@ function showToast(msg, type = "success") {
     toastTimer = setTimeout(() => t.classList.remove("show"), 3000);
 }
 
-/* ── Posts ── */
+/* ── Posts Management ── */
 function setLoading(show) {
     document.getElementById("spinner-wrap").classList.toggle("show", show);
     if (show) document.getElementById("posts").innerHTML = "";
@@ -380,7 +395,10 @@ function postMessage(tier) {
         document.getElementById("category-select").selectedIndex = 0;
         document.getElementById("expiration-select").selectedIndex = 0;
         showToast(tier === "featured" ? "⭐ Featured post published!" : "✅ Message posted!");
-        loadPosts();
+        
+        // FIX: Re-fetch respecting whatever is currently in the search filter to avoid view popping
+        const currentQuery = document.getElementById("search-input").value.trim();
+        loadPosts(currentQuery || null);
     })
     .catch(() => showToast("Connection error.", "error"));
 }
@@ -407,7 +425,6 @@ function getRemainingTimeLabel(expiresAt) {
 }
 
 function loadPosts(filtered = null) {
-    setLoading(true);
     document.getElementById("empty-state").classList.remove("show");
 
     const url = filtered
@@ -422,6 +439,7 @@ function loadPosts(filtered = null) {
         const postsEl = document.getElementById("posts");
 
         if (!posts.length) {
+            postsEl.innerHTML = "";
             document.getElementById("empty-state").classList.add("show");
             return;
         }
@@ -486,31 +504,24 @@ function deletePost(id) {
     .then(data => {
         if (data.error) { showToast(data.error, "error"); return; }
         showToast("Post deleted.");
-        loadPosts();
+        loadPosts(document.getElementById("search-input").value.trim() || null);
     })
     .catch(() => showToast("Delete failed.", "error"));
 }
 
 function editPost(id) {
-    fetch(`${API}/api/posts`)
+    // FIX: Match route layout structures explicitly to ensure seamless loading transitions
+    const currentQuery = document.getElementById("search-input").value.trim();
+    const url = currentQuery ? `${API}/api/posts/search/${encodeURIComponent(currentQuery)}` : `${API}/api/posts`;
+    
+    fetch(url)
     .then(r => r.json())
     .then(posts => {
         const post = posts.find(p => p.id === id);
         if (!post) return showToast("Post not found.", "error");
-        const newMessage = prompt("Edit your message:", post.message);
-        if (!newMessage || !newMessage.trim()) return;
-        fetch(`${API}/api/posts/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: newMessage.trim(), user_id: currentUser.id })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.error) showToast(data.error, "error");
-            else { showToast("Post updated."); loadPosts(); }
-        })
-        .catch(() => showToast("Edit failed.", "error"));
-    });
+        showEditModal(id, post.message);
+    })
+    .catch(() => showToast("Failed to open edit modal.", "error"));
 }
 
 let filterTimer;
@@ -522,12 +533,20 @@ function filterPosts() {
     }, 300);
 }
 
-/* ── Admin modal ── */
+/* ── Admin Moderation ── */
 function openAdminModal() {
-    if (currentUser.name.toLowerCase() !== "admin") return;
+    if (currentUser.role !== "admin") return;
     document.getElementById("admin-modal").classList.add("show");
     document.body.style.overflow = "hidden";
     loadAdminPosts();
+}
+
+// FIX: Combined click target handlers for predictable click-away backdrop closing behavior
+function handleModalClick(e) {
+    if (e.target === document.getElementById("admin-modal")) closeAdminModal();
+}
+function handleEditModalClick(e) {
+    if (e.target === document.getElementById("edit-modal")) closeEditModal();
 }
 
 function closeAdminModal() {
@@ -535,8 +554,40 @@ function closeAdminModal() {
     document.body.style.overflow = "";
 }
 
-function handleModalClick(e) {
-    if (e.target === document.getElementById("admin-modal")) closeAdminModal();
+let editingPostId = null;
+function showEditModal(id, message) {
+    editingPostId = id;
+    document.getElementById("edit-message").value = message;
+    document.getElementById("edit-modal").classList.add("show");
+    document.body.style.overflow = "hidden";
+    document.getElementById("edit-message").focus();
+}
+
+function closeEditModal() {
+    editingPostId = null;
+    document.getElementById("edit-modal").classList.remove("show");
+    document.body.style.overflow = "";
+}
+
+function submitEditPost() {
+    const newMessage = document.getElementById("edit-message").value.trim();
+    if (!newMessage) return showToast("Message cannot be empty.", "error");
+    
+    fetch(`${API}/api/posts/${editingPostId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: newMessage, user_id: currentUser.id })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) showToast(data.error, "error");
+        else { 
+            showToast("Post updated."); 
+            closeEditModal(); 
+            loadPosts(document.getElementById("search-input").value.trim() || null); 
+        }
+    })
+    .catch(() => showToast("Edit failed.", "error"));
 }
 
 function loadAdminPosts() {
@@ -585,12 +636,12 @@ function adminDelete(id, btn) {
         if (data.error) { showToast(data.error, "error"); btn.disabled = false; return; }
         showToast("Post deleted.");
         btn.closest(".admin-post").remove();
-        loadPosts();
+        loadPosts(document.getElementById("search-input").value.trim() || null);
     })
     .catch(() => { showToast("Delete failed.", "error"); btn.disabled = false; });
 }
 
-// Escape key closes modal
+// Escape key closes modal layout overlay
 document.addEventListener("keydown", e => {
     if (e.key === "Escape") closeAdminModal();
 });
@@ -600,8 +651,17 @@ function logoutUser() {
     window.location.href = "index.html";
 }
 
+// Run initial loading fetch sequence safely
+setLoading(true);
 loadPosts();
-setInterval(loadPosts, 60000);
+
+// FIX: Do not run background refreshes while the user is actively typing inside the search input box
+setInterval(() => {
+    const searchField = document.getElementById("search-input");
+    if (document.activeElement !== searchField) {
+        loadPosts(searchField.value.trim() || null);
+    }
+}, 60000);
 </script>
 </body>
 </html>

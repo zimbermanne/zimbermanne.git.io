@@ -230,8 +230,8 @@ button.submit:disabled {
 </div>
 
 <script>
-// Empty string = relative URLs (/api/...) — works on localhost AND in production
-const API = '';
+// Point dynamically to host URL
+const API = window.location.origin;
 
 function switchTab(tab){
     document.getElementById("login-form").style.display   = tab === "login"    ? "block" : "none";
@@ -262,12 +262,15 @@ function showError(id, msg) {
 function setLoading(btnId, loading) {
     const btn = document.getElementById(btnId);
     btn.disabled = loading;
-    btn.textContent = loading ? "Please wait…" : btn.dataset.label;
+    
+    // FIX: Provide explicit string fallbacks right here if dataset attributes haven't fully bound yet
+    const fallbackText = btnId === "login-btn" ? "Enter Dashboard" : "Create Account";
+    btn.textContent = loading ? "Please wait…" : (btn.dataset.label || fallbackText);
 }
 
-// Store original labels
+// Store original labels on load
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("login-btn").dataset.label    = "Enter Dashboard";
+    document.getElementById("login-btn").dataset.label = "Enter Dashboard";
     document.getElementById("register-btn").dataset.label = "Create Account";
 });
 
@@ -302,7 +305,7 @@ function registerUser(){
     })
     .catch(() => {
         setLoading("register-btn", false);
-        showError("register-error", "Connection error. Is the server running on port 3000?");
+        showError("register-error", "Connection error. Failed to reach server.");
     });
 }
 
@@ -334,14 +337,15 @@ function loginUser(){
     })
     .catch(() => {
         setLoading("login-btn", false);
-        showError("login-error", "Connection error. Is the server running on port 3000?");
+        showError("login-error", "Connection error. Failed to reach server.");
     });
 }
 
-// Allow Enter key to submit
+// FIX: Target and query element visibility using computed styles safely for cross-browser stability
 document.addEventListener("keydown", e => {
     if (e.key !== "Enter") return;
-    const loginVisible = document.getElementById("login-form").style.display !== "none";
+    const loginForm = document.getElementById("login-form");
+    const loginVisible = loginForm.style.display !== "none" && window.getComputedStyle(loginForm).display !== "none";
     if (loginVisible) loginUser(); else registerUser();
 });
 </script>

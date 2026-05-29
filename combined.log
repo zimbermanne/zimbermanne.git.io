@@ -181,3 +181,12 @@
 {"level":"info","message":"http://localhost:8080","service":"ubaoni-api","timestamp":"2026-05-27 16:07:27"}
 {"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-27 16:07:27"}
 {"ip":"::1","level":"info","message":"GET /api/health","service":"ubaoni-api","timestamp":"2026-05-27 16:07:44"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-29 17:29:31"}
+{"level":"info","message":"UBAONI Server Started","service":"ubaoni-api","timestamp":"2026-05-29 17:29:31"}
+{"level":"info","message":"Port: 8080","service":"ubaoni-api","timestamp":"2026-05-29 17:29:31"}
+{"level":"info","message":"Environment: development","service":"ubaoni-api","timestamp":"2026-05-29 17:29:31"}
+{"level":"info","message":"Database: PostgreSQL","service":"ubaoni-api","timestamp":"2026-05-29 17:29:31"}
+{"level":"info","message":"http://localhost:8080","service":"ubaoni-api","timestamp":"2026-05-29 17:29:31"}
+{"level":"info","message":"========================================","service":"ubaoni-api","timestamp":"2026-05-29 17:29:31"}
+{"code":"ECONNREFUSED","level":"error","message":"Error ensuring DB schema","service":"ubaoni-api","stack":"AggregateError [ECONNREFUSED]: \n    at C:\\Users\\Kikundi cha uwema\\Documents\\GitHub\\zimbermanne.git.io\\node_modules\\pg-pool\\index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async ensureSchema (C:\\Users\\Kikundi cha uwema\\Documents\\GitHub\\zimbermanne.git.io\\server.js:272:9)\n    at async C:\\Users\\Kikundi cha uwema\\Documents\\GitHub\\zimbermanne.git.io\\server.js:300:5","timestamp":"2026-05-29 17:29:31"}
+{"code":"ECONNREFUSED","level":"error","message":"Error initializing admin account","service":"ubaoni-api","stack":"AggregateError [ECONNREFUSED]: \n    at C:\\Users\\Kikundi cha uwema\\Documents\\GitHub\\zimbermanne.git.io\\node_modules\\pg-pool\\index.js:45:11\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async initializeAdminAccount (C:\\Users\\Kikundi cha uwema\\Documents\\GitHub\\zimbermanne.git.io\\server.js:282:37)\n    at async C:\\Users\\Kikundi cha uwema\\Documents\\GitHub\\zimbermanne.git.io\\server.js:301:5","timestamp":"2026-05-29 17:29:31"}

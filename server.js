@@ -44,32 +44,95 @@ const logger = winston.createLogger({
     ]
 });
 
-const readData = () => {
+// Database-backed read/write helpers
+const readData = async () => {
     try {
-        if (!fs.existsSync(DATA_FILE)) {
-            writeData(DEFAULT_DATA);
-            return structuredClone(DEFAULT_DATA);
-        }
+        const usersRes = await pool.query(`SELECT id, name, email, phone, password_hash, created_at, role, status FROM users`);
+        const postsRes = await pool.query(`SELECT id, user_id, message, category, tier, likes, created_at, expires_at FROM posts`);
+        const likesRes = await pool.query(`SELECT post_id, user_id, created_at FROM likes`);
 
-        const raw = fs.readFileSync(DATA_FILE, 'utf-8');
-        const parsed = JSON.parse(raw);
+        const data = {
+            users: usersRes.rows.map(u => ({
+                id: u.id,
+                name: u.name,
+                email: u.email,
+                phone: u.phone,
+                role: u.role || 'user',
+                status: u.status || 'active',
+                password_hash: u.password_hash,
+                created_at: u.created_at
+            })),
+            posts: postsRes.rows.map(p => ({
+                id: p.id,
+                user_id: p.user_id,
+                message: p.message,
+                category: p.category,
+                tier: p.tier,
+                likes: p.likes || 0,
+                created_at: p.created_at,
+                expires_at: p.expires_at
+            })),
+            likes: likesRes.rows.map(l => ({
+                post_id: l.post_id,
+                user_id: l.user_id,
+                created_at: l.created_at
+            }))
+        };
 
-        return normalizeData(parsed);
+        return normalizeData(data);
     } catch (error) {
-        logger.error(`Error reading local JSON data file: ${DATA_FILE}`, error);
-        return structuredClone(DEFAULT_DATA);
+        logger.error('Error reading from PostgreSQL', error);
+        return normalizeData({ users: [], posts: [], likes: [] });
     }
 };
 
-const writeData = (data) => {
+const writeData = async (data) => {
+    const client = await pool.connect();
     try {
-        const normalizedData = normalizeData(data);
+        await client.query('BEGIN');
 
-        fs.writeFileSync(DATA_FILE, JSON.stringify(normalizedData, null, 2), 'utf-8');
+        // Clear existing data
+        await client.query('TRUNCATE likes, posts, users RESTART IDENTITY CASCADE');
+
+        // Insert users (only columns that exist in schema)
+        for (const u of data.users || []) {
+            await client.query(
+                `INSERT INTO users (id, name, email, phone, password_hash, created_at)
+                 VALUES ($1,$2,$3,$4,$5,$6)`,
+                [u.id || null, u.name, u.email || null, u.phone || null, u.password_hash || null, u.created_at || new Date().toISOString()]
+            );
+        }
+
+        // Insert posts
+        for (const p of data.posts || []) {
+            await client.query(
+                `INSERT INTO posts (id, user_id, message, category, tier, likes, created_at, expires_at)
+                 VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
+                [p.id || null, p.user_id, p.message, p.category, p.tier || 'basic', p.likes || 0, p.created_at || new Date().toISOString(), p.expires_at || null]
+            );
+        }
+
+        // Insert likes (no explicit id)
+        for (const l of data.likes || []) {
+            await client.query(
+                `INSERT INTO likes (post_id, user_id, created_at) VALUES ($1,$2,$3) ON CONFLICT DO NOTHING`,
+                [l.post_id, l.user_id, l.created_at || new Date().toISOString()]
+            );
+        }
+
+        // Ensure sequences set to max ids
+        await client.query("SELECT setval(pg_get_serial_sequence('users','id'), COALESCE((SELECT MAX(id) FROM users),1), true)");
+        await client.query("SELECT setval(pg_get_serial_sequence('posts','id'), COALESCE((SELECT MAX(id) FROM posts),1), true)");
+        await client.query("SELECT setval(pg_get_serial_sequence('likes','id'), COALESCE((SELECT MAX(id) FROM likes),1), true)");
+
+        await client.query('COMMIT');
         return true;
     } catch (error) {
-        logger.error(`Error writing local JSON data file: ${DATA_FILE}`, error);
+        await client.query('ROLLBACK');
+        logger.error('Error writing to PostgreSQL', error);
         return false;
+    } finally {
+        client.release();
     }
 };
 
@@ -88,8 +151,6 @@ const normalizeData = (data) => {
         likes
     };
 };
-
-writeData(readData());
 
 const limiter = rateLimit({
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 900000,
@@ -205,38 +266,40 @@ const withUserName = (post, users) => ({
     user_name: users.find(user => user.id === post.user_id)?.name || 'Unknown'
 });
 
-const initializeAdminAccount = () => {
-    const data = readData();
-    const existingAdmin = data.users.find(user => user.role === 'admin');
-
-    if (existingAdmin) {
-        return;
+const ensureSchema = async () => {
+    try {
+        // Add role and status columns if they don't exist
+        await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user'");
+        await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active'");
+        await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_at TIMESTAMP");
+    } catch (error) {
+        logger.error('Error ensuring DB schema', error);
     }
-
-    const matchingUser = findUserByName(data, ADMIN_USERNAME);
-    if (matchingUser) {
-        matchingUser.role = 'admin';
-        matchingUser.status = 'active';
-        matchingUser.email = matchingUser.email || ADMIN_EMAIL;
-        logger.info(`Existing user promoted to admin: ${matchingUser.name}`);
-    } else {
-        data.users.push({
-            id: getNextId(data.users),
-            name: ADMIN_USERNAME,
-            email: ADMIN_EMAIL,
-            phone: null,
-            role: 'admin',
-            status: 'active',
-            password_hash: bcrypt.hashSync(ADMIN_PASSWORD, BCRYPT_ROUNDS),
-            created_at: new Date().toISOString()
-        });
-        logger.info(`Seeded admin account: ${ADMIN_USERNAME}`);
-    }
-
-    writeData(data);
 };
 
-initializeAdminAccount();
+const initializeAdminAccount = async () => {
+    try {
+        const { rows: adminRows } = await pool.query(`SELECT * FROM users WHERE role = 'admin' LIMIT 1`);
+        if (adminRows.length > 0) return;
+
+        const { rows: match } = await pool.query('SELECT * FROM users WHERE LOWER(name) = LOWER($1) LIMIT 1', [ADMIN_USERNAME]);
+        if (match.length > 0) {
+            await pool.query('UPDATE users SET role = $1, status = $2, email = COALESCE(email, $3) WHERE id = $4', ['admin', 'active', ADMIN_EMAIL, match[0].id]);
+            logger.info(`Existing user promoted to admin: ${match[0].name}`);
+        } else {
+            const hash = bcrypt.hashSync(ADMIN_PASSWORD, BCRYPT_ROUNDS);
+            await pool.query('INSERT INTO users (name, email, phone, password_hash, role, status, created_at) VALUES ($1,$2,$3,$4,$5,$6,$7)', [ADMIN_USERNAME, ADMIN_EMAIL, null, hash, 'admin', 'active', new Date().toISOString()]);
+            logger.info(`Seeded admin account: ${ADMIN_USERNAME}`);
+        }
+    } catch (error) {
+        logger.error('Error initializing admin account', error);
+    }
+};
+
+(async () => {
+    await ensureSchema();
+    await initializeAdminAccount();
+})();
 
 app.post('/api/register', authLimiter, async (req, res) => {
     try {
@@ -258,7 +321,7 @@ app.post('/api/register', authLimiter, async (req, res) => {
         const sanitizedName = sanitizeString(name);
         const sanitizedEmail = sanitizeString(email || '');
         const sanitizedPhone = sanitizeString(phone || '');
-        const data = readData();
+        const data = await readData();
 
         if (sanitizedName.toLowerCase() === ADMIN_USERNAME.toLowerCase()) {
             return res.status(403).json({ error: 'This username is reserved for the administrator account' });
@@ -282,7 +345,7 @@ app.post('/api/register', authLimiter, async (req, res) => {
 
         data.users.push(newUser);
 
-        if (!writeData(data)) {
+        if (!(await writeData(data))) {
             return handleError(res, null, 500, 'Failed to save user locally');
         }
 
@@ -305,7 +368,7 @@ app.post('/api/login', authLimiter, async (req, res) => {
         }
 
         const sanitizedName = sanitizeString(name);
-        const data = readData();
+        const data = await readData();
         const user = findUserByName(data, sanitizedName);
 
         if (!user || !(await bcrypt.compare(password, user.password_hash))) {
@@ -324,7 +387,7 @@ app.post('/api/login', authLimiter, async (req, res) => {
     }
 });
 
-app.post('/api/posts', (req, res) => {
+app.post('/api/posts', async (req, res) => {
     try {
         const { user_id, message, category, tier, expiration_hours } = req.body;
 
@@ -341,7 +404,7 @@ app.post('/api/posts', (req, res) => {
             return res.status(400).json({ error: 'Invalid tier' });
         }
 
-        const data = readData();
+        const data = await readData();
         const auth = requireActiveUser(data, user_id);
         if (auth.error) {
             return res.status(auth.statusCode).json({ error: auth.error });
@@ -364,7 +427,7 @@ app.post('/api/posts', (req, res) => {
 
         data.posts.push(newPost);
 
-        if (!writeData(data)) {
+        if (!(await writeData(data))) {
             return handleError(res, null, 500, 'Failed to create post locally');
         }
 
@@ -375,9 +438,9 @@ app.post('/api/posts', (req, res) => {
     }
 });
 
-app.get('/api/posts', (req, res) => {
+app.get('/api/posts', async (req, res) => {
     try {
-        const data = readData();
+        const data = await readData();
         const now = new Date().toISOString();
 
         const posts = data.posts
@@ -392,14 +455,14 @@ app.get('/api/posts', (req, res) => {
     }
 });
 
-app.get('/api/posts/search/:query', (req, res) => {
+app.get('/api/posts/search/:query', async (req, res) => {
     try {
         const query = sanitizeString(req.params.query).toLowerCase();
         if (!validateString(query, 1, 100)) {
             return res.status(400).json({ error: 'Invalid search query' });
         }
 
-        const data = readData();
+        const data = await readData();
         const now = new Date().toISOString();
         const posts = data.posts
             .filter(post => !post.expires_at || post.expires_at > now)
@@ -419,7 +482,7 @@ app.get('/api/posts/search/:query', (req, res) => {
     }
 });
 
-app.put('/api/posts/:id', (req, res) => {
+app.put('/api/posts/:id', async (req, res) => {
     try {
         const { message, user_id } = req.body;
         const postId = parseInt(req.params.id, 10);
@@ -434,7 +497,7 @@ app.put('/api/posts/:id', (req, res) => {
             return res.status(400).json({ error: 'Message must be 1-5000 characters' });
         }
 
-        const data = readData();
+        const data = await readData();
         const post = findPostById(data, postId);
         const auth = requireActiveUser(data, user_id);
 
@@ -451,7 +514,7 @@ app.put('/api/posts/:id', (req, res) => {
 
         post.message = sanitizeString(message);
 
-        if (!writeData(data)) {
+        if (!(await writeData(data))) {
             return handleError(res, null, 500, 'Failed to update post locally');
         }
 
@@ -462,7 +525,7 @@ app.put('/api/posts/:id', (req, res) => {
     }
 });
 
-app.delete('/api/posts/:id', (req, res) => {
+app.delete('/api/posts/:id', async (req, res) => {
     try {
         const { user_id } = req.body;
         const postId = parseInt(req.params.id, 10);
@@ -474,7 +537,7 @@ app.delete('/api/posts/:id', (req, res) => {
             return res.status(400).json({ error: 'Invalid user_id' });
         }
 
-        const data = readData();
+        const data = await readData();
         const post = findPostById(data, postId);
 
         if (!post) {
@@ -494,7 +557,7 @@ app.delete('/api/posts/:id', (req, res) => {
         data.posts = data.posts.filter(item => item.id !== postId);
         data.likes = data.likes.filter(like => like.post_id !== postId);
 
-        if (!writeData(data)) {
+        if (!(await writeData(data))) {
             return handleError(res, null, 500, 'Failed to delete post locally');
         }
 
@@ -505,7 +568,7 @@ app.delete('/api/posts/:id', (req, res) => {
     }
 });
 
-app.post('/api/likes/:post_id', (req, res) => {
+app.post('/api/likes/:post_id', async (req, res) => {
     try {
         const { user_id } = req.body;
         const postId = parseInt(req.params.post_id, 10);
@@ -517,7 +580,7 @@ app.post('/api/likes/:post_id', (req, res) => {
             return res.status(400).json({ error: 'Invalid user_id' });
         }
 
-        const data = readData();
+        const data = await readData();
         const post = findPostById(data, postId);
         const auth = requireActiveUser(data, user_id);
 
@@ -542,7 +605,7 @@ app.post('/api/likes/:post_id', (req, res) => {
 
         post.likes = data.likes.filter(like => like.post_id === postId).length;
 
-        if (!writeData(data)) {
+        if (!(await writeData(data))) {
             return handleError(res, null, 500, 'Failed to update like locally');
         }
 
@@ -553,7 +616,7 @@ app.post('/api/likes/:post_id', (req, res) => {
     }
 });
 
-app.get('/api/likes/:post_id', (req, res) => {
+app.get('/api/likes/:post_id', async (req, res) => {
     try {
         const postId = parseInt(req.params.post_id, 10);
 
@@ -561,7 +624,7 @@ app.get('/api/likes/:post_id', (req, res) => {
             return res.status(400).json({ error: 'Invalid post_id' });
         }
 
-        const data = readData();
+        const data = await readData();
         const likeUsers = data.likes
             .filter(like => like.post_id === postId)
             .map(like => {
@@ -575,7 +638,7 @@ app.get('/api/likes/:post_id', (req, res) => {
     }
 });
 
-app.get('/api/admin/posts', (req, res) => {
+app.get('/api/admin/posts', async (req, res) => {
     try {
         const userId = Number(req.query.user_id);
 
@@ -583,7 +646,7 @@ app.get('/api/admin/posts', (req, res) => {
             return res.status(400).json({ error: 'Invalid user_id' });
         }
 
-        const data = readData();
+        const data = await readData();
         const auth = requireAdmin(data, userId);
         if (auth.error) {
             logger.warn(`Unauthorized admin access attempt - User: ${userId}`);
@@ -601,10 +664,10 @@ app.get('/api/admin/posts', (req, res) => {
     }
 });
 
-app.get('/api/admin/users', (req, res) => {
+app.get('/api/admin/users', async (req, res) => {
     try {
         const adminId = Number(req.query.user_id);
-        const data = readData();
+        const data = await readData();
         const auth = requireAdmin(data, adminId);
 
         if (auth.error) {
@@ -626,7 +689,7 @@ app.get('/api/admin/users', (req, res) => {
     }
 });
 
-app.patch('/api/admin/users/:id/status', (req, res) => {
+app.patch('/api/admin/users/:id/status', async (req, res) => {
     try {
         const adminId = Number(req.body.user_id);
         const targetId = parseInt(req.params.id, 10);
@@ -636,7 +699,7 @@ app.patch('/api/admin/users/:id/status', (req, res) => {
             return res.status(400).json({ error: 'Invalid status' });
         }
 
-        const data = readData();
+        const data = await readData();
         const auth = requireAdmin(data, adminId);
         if (auth.error) {
             return res.status(auth.statusCode).json({ error: auth.error });
@@ -654,7 +717,7 @@ app.patch('/api/admin/users/:id/status', (req, res) => {
         }
 
         targetUser.status = status;
-        if (!writeData(data)) {
+        if (!(await writeData(data))) {
             return handleError(res, null, 500, 'Failed to update user status');
         }
 
@@ -675,7 +738,7 @@ app.post('/api/admin/users/:id/reset-password', async (req, res) => {
             return res.status(400).json({ error: 'Password must be 6-128 characters' });
         }
 
-        const data = readData();
+        const data = await readData();
         const auth = requireAdmin(data, adminId);
         if (auth.error) {
             return res.status(auth.statusCode).json({ error: auth.error });
@@ -689,7 +752,7 @@ app.post('/api/admin/users/:id/reset-password', async (req, res) => {
         targetUser.password_hash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
         targetUser.password_reset_at = new Date().toISOString();
 
-        if (!writeData(data)) {
+        if (!(await writeData(data))) {
             return handleError(res, null, 500, 'Failed to reset password');
         }
 
@@ -700,11 +763,11 @@ app.post('/api/admin/users/:id/reset-password', async (req, res) => {
     }
 });
 
-app.delete('/api/admin/users/:id', (req, res) => {
+app.delete('/api/admin/users/:id', async (req, res) => {
     try {
         const adminId = Number(req.body.user_id);
         const targetId = parseInt(req.params.id, 10);
-        const data = readData();
+        const data = await readData();
         const auth = requireAdmin(data, adminId);
 
         if (auth.error) {
@@ -734,7 +797,7 @@ app.delete('/api/admin/users/:id', (req, res) => {
             post.likes = data.likes.filter(like => like.post_id === post.id).length;
         });
 
-        if (!writeData(data)) {
+        if (!(await writeData(data))) {
             return handleError(res, null, 500, 'Failed to delete user');
         }
 
@@ -745,10 +808,10 @@ app.delete('/api/admin/users/:id', (req, res) => {
     }
 });
 
-app.get('/api/admin/stats', (req, res) => {
+app.get('/api/admin/stats', async (req, res) => {
     try {
         const adminId = Number(req.query.user_id);
-        const data = readData();
+        const data = await readData();
         const auth = requireAdmin(data, adminId);
 
         if (auth.error) {
@@ -776,7 +839,7 @@ app.get('/api/admin/stats', (req, res) => {
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',
-        storage: DATA_FILE,
+        storage: process.env.DATABASE_URL || 'PostgreSQL',
         timestamp: new Date().toISOString()
     });
 });
@@ -801,7 +864,7 @@ app.listen(PORT, () => {
     logger.info('UBAONI Server Started');
     logger.info(`Port: ${PORT}`);
     logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    logger.info(`Local JSON storage: ${DATA_FILE}`);
+    logger.info(`Database: ${process.env.DATABASE_URL || 'PostgreSQL'}`);
     logger.info(`http://localhost:${PORT}`);
     logger.info('========================================');
 });

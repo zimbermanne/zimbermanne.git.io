@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
-const fs = require('fs');
+const { Pool } = require('pg');
 const validator = require('validator');
 const rateLimit = require('express-rate-limit');
 const winston = require('winston');
@@ -17,17 +17,11 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@ubaoni.local';
 
-const DATA_DIR = path.join(__dirname, 'data');
-const DATA_FILE = path.join(DATA_DIR, 'app-data.json');
-const DEFAULT_DATA = {
-    users: [],
-    posts: [],
-    likes: []
-};
-
-if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-}
+// PostgreSQL Connection Pool
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL || 'postgresql://localhost/ubaoni',
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+});
 
 const logger = winston.createLogger({
     level: process.env.LOG_LEVEL || 'info',
